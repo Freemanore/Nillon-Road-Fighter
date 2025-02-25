@@ -31,8 +31,8 @@ class Game {
     this.player = {
       x: this.canvas.width / 2 - 15,
       y: this.canvas.height - 100,
-      width: 40, // Bus width
-      height: 80, // Made the bus longer
+      width: 40,
+      height: 80,
       speed: 5,
       color: "#ff0000",
     };
@@ -47,11 +47,66 @@ class Game {
       if (e.code === "Space" && this.ammo > 0) {
         this.shoot();
       }
+      if (e.key === "r" && this.gameOver) {
+        this.resetGame();
+      }
     });
     window.addEventListener("keyup", (e) => (this.keys[e.key] = false));
 
     // Start the game loop
     this.gameLoop();
+  }
+
+  init() {
+    // Player car
+    this.player = {
+      x: this.canvas.width / 2 - 15,
+      y: this.canvas.height - 100,
+      width: 40,
+      height: 80,
+      speed: 5,
+      color: "#ff0000",
+    };
+
+    // Array to store enemy cars
+    this.enemies = [];
+
+    // Input handling
+    this.keys = {};
+    window.addEventListener("keydown", (e) => {
+      this.keys[e.key] = true;
+      if (e.code === "Space" && this.ammo > 0) {
+        this.shoot();
+      }
+      if (e.key === "r" && this.gameOver) {
+        this.resetGame();
+      }
+    });
+    window.addEventListener("keyup", (e) => (this.keys[e.key] = false));
+
+    // Mobile controls
+    this.setupMobileControls();
+  }
+
+  resetGame() {
+    this.score = 0;
+    this.gameOver = false;
+    this.gameStarted = true;
+    this.roadOffset = 0;
+    this.enemySpawnTimer = 0;
+    this.signOffset = 0;
+    this.swerveOffset = 0;
+    this.swerveSpeed = 0;
+    this.gameStartTime = Date.now();
+    this.bullets = [];
+    this.ammo = 15;
+    this.lastAmmoRefillTime = Date.now();
+    this.powerUps = [];
+    this.speedReductionActive = false;
+    this.speedReductionEndTime = 0;
+    this.enemies = [];
+    this.player.x = this.canvas.width / 2 - 15;
+    document.getElementById("score").textContent = "$NIL: 0";
   }
 
   update() {
@@ -230,7 +285,7 @@ class Game {
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     if (!this.gameStarted) {
-      // Draw start screen
+      // Draw start screen with touch instructions
       this.ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
       this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -240,24 +295,35 @@ class Game {
       this.ctx.fillText(
         "Can you securely deliver the warriors",
         this.canvas.width / 2,
-        this.canvas.height / 2 - 20
+        this.canvas.height / 2 - 40
       );
       this.ctx.fillText(
         "to ETH Denver?",
         this.canvas.width / 2,
-        this.canvas.height / 2
+        this.canvas.height / 2 - 20
       );
       this.ctx.fillText(
         "We'll see...",
         this.canvas.width / 2,
-        this.canvas.height / 2 + 20
+        this.canvas.height / 2
       );
       this.ctx.font = "12px Arial";
       this.ctx.fillText(
-        "Press any key to start",
+        "Tap anywhere or press any key to start",
         this.canvas.width / 2,
-        this.canvas.height / 2 + 50
+        this.canvas.height / 2 + 30
       );
+
+      // Add touch event listener for game start
+      const startGame = (e) => {
+        e.preventDefault();
+        this.gameStarted = true;
+        document.removeEventListener('touchstart', startGame);
+        window.removeEventListener('keydown', startGame);
+      };
+
+      document.addEventListener('touchstart', startGame);
+      window.addEventListener('keydown', startGame);
       return;
     }
 
@@ -728,6 +794,20 @@ class Game {
         this.shoot();
       }
       return false;
+    });
+
+    // Add restart functionality for touch devices
+    document.addEventListener('touchstart', (e) => {
+      if (this.gameOver) {
+        const touch = e.touches[0];
+        const centerX = this.canvas.width / 2;
+        const centerY = this.canvas.height / 2 + 40;
+        
+        // Check if touch is within restart text area
+        if (Math.abs(touch.clientX - centerX) < 100 && Math.abs(touch.clientY - centerY) < 30) {
+          window.location.reload();
+        }
+      }
     });
 
     // Prevent default touch behaviors

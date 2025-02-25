@@ -429,7 +429,7 @@ class Game {
       );
       this.ctx.font = "20px Arial";
       this.ctx.fillText(
-        "Press R to restart",
+        "Tap here to restart",
         this.canvas.width / 2,
         this.canvas.height / 2 + 40
       );
@@ -750,7 +750,7 @@ class Game {
     requestAnimationFrame(() => this.gameLoop());
   }
 
-  restart() {
+  resetGame() {
     this.score = 0;
     document.getElementById("score").textContent = "$NIL: 0";
     this.gameOver = false;

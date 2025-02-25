@@ -24,6 +24,9 @@ class Game {
     this.speedReductionEndTime = 0;
     this.startScreenAlpha = 1.0; // For fade effect
 
+    // Mobile controls
+    this.setupMobileControls();
+
     // Player car
     this.player = {
       x: this.canvas.width / 2 - 15,
@@ -695,6 +698,40 @@ class Game {
     this.player.x = this.canvas.width / 2 - 15;
     this.player.y = this.canvas.height - 100;
     this.gameStartTime = Date.now(); // Reset game start time on restart
+  }
+
+  setupMobileControls() {
+    const leftBtn = document.getElementById('leftBtn');
+    const rightBtn = document.getElementById('rightBtn');
+    const shootBtn = document.getElementById('shootBtn');
+
+    // Touch events for movement buttons
+    const handleMove = (direction) => {
+      this.keys[`Arrow${direction}`] = true;
+      return false;
+    };
+
+    const handleMoveEnd = (direction) => {
+      this.keys[`Arrow${direction}`] = false;
+      return false;
+    };
+
+    leftBtn.addEventListener('touchstart', () => handleMove('Left'));
+    leftBtn.addEventListener('touchend', () => handleMoveEnd('Left'));
+    rightBtn.addEventListener('touchstart', () => handleMove('Right'));
+    rightBtn.addEventListener('touchend', () => handleMoveEnd('Right'));
+
+    // Touch event for shooting
+    shootBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (this.ammo > 0) {
+        this.shoot();
+      }
+      return false;
+    });
+
+    // Prevent default touch behaviors
+    document.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
   }
 }
 

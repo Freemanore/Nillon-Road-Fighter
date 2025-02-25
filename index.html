@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Road Fighter</title>
     <style>
       body {
@@ -22,6 +22,7 @@
         background-size: 30px 30px;
         position: relative;
         overflow: hidden;
+        touch-action: none;
       }
       body::before {
         content: "";
@@ -61,6 +62,7 @@
         image-rendering: pixelated;
         image-rendering: crisp-edges;
         max-width: 100%;
+        height: auto;
         margin-top: 80px;
         box-shadow: 0 0 30px rgba(0, 102, 255, 0.2);
         border: 2px solid rgba(0, 102, 255, 0.3);
@@ -68,6 +70,9 @@
       }
       #game-container {
         position: relative;
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto;
       }
       #score {
         position: absolute;
@@ -79,6 +84,35 @@
         z-index: 1;
         text-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
       }
+      #mobile-controls {
+        position: fixed;
+        bottom: 20px;
+        left: 0;
+        right: 0;
+        display: none;
+        justify-content: space-between;
+        padding: 0 20px;
+        z-index: 100;
+      }
+      .control-button {
+        width: 60px;
+        height: 60px;
+        background: rgba(0, 102, 255, 0.3);
+        border: 2px solid rgba(0, 102, 255, 0.5);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 24px;
+        user-select: none;
+        touch-action: none;
+      }
+      @media (max-width: 768px) {
+        #mobile-controls {
+          display: flex;
+        }
+      }
     </style>
   </head>
   <body>
@@ -86,6 +120,11 @@
     <div id="game-container">
       <div id="score">$NIL: 0</div>
       <canvas id="gameCanvas" width="320" height="480"></canvas>
+    </div>
+    <div id="mobile-controls">
+      <div class="control-button" id="leftBtn">←</div>
+      <div class="control-button" id="shootBtn">•</div>
+      <div class="control-button" id="rightBtn">→</div>
     </div>
     <script src="game.js"></script>
   </body>
